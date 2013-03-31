@@ -4,5 +4,10 @@
  */
 
 exports.list = function(req, res){
-  res.send("respond with a resource");
+  if (req.loggedIn) {
+    res.send("user logged in");
+  }
+  else {
+    res.send("user not logged in");
+  }
 };
