@@ -8,8 +8,8 @@
   "dependencies": {
     "express": "3.1.0",
     "jade": "*",
-    "everyauth": "~0.3.1",
-    "mongoose": "~3.6.2"
+    "mongoose": "~3.6.2",
+    "mongoose-auth": "0.0.12"
   },
   "devDependencies": {
     "grunt": "~0.4.0",
