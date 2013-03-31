@@ -9,7 +9,8 @@
     "express": "3.1.0",
     "jade": "*",
     "mongoose": "~3.6.2",
-    "mongoose-auth": "0.0.12"
+    "mongoose-auth": "0.0.12",
+    "everyauth": "~0.3.1"
   },
   "devDependencies": {
     "grunt": "~0.4.0",
