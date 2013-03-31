@@ -10,59 +10,54 @@ var http = require('http');
 var path = require('path');
 
 var everyauth = require('everyauth');
+var Promise = everyauth.Promise;
 
 everyauth.debug = true;
 
-everyauth
-  .password
-    .loginWith('email')
-    .getLoginPath('/login')
-    .postLoginPath('/login')
-    .loginView('login.jade')
-    .loginLocals( function (req, res, done) {
-      setTimeout( function () {
-        done(null, { title: 'Async login' });
-      }, 200);
-    })
-    .authenticate( function (login, password) {
-      var errors = [];
-      if (!login) errors.push('Missing login');
-      if (!password) errors.push('Missing password');
-      if (errors.length > 0) return errors;
+var mongoose = require('mongoose');
+var Schema = mongoose.Schema;
+var ObjectId = mongoose.SchemaTypes.ObjectId;
 
-      // TODO: Implement user password authentication logic
+var UserSchema = new Schema({});
+var User;
 
-      //var user = usersByLogin[login];
-      //if (!user) return ['Login failed'];
-      //if (user.password !== password) return ['Login failed'];
+var mongooseAuth = require('mongoose-auth');
 
-      //return user;
-      return ['Not implemented'];
-    })
-    .getRegisterPath('/register')
-    .postRegisterPath('/register')
-    .registerView('register.jade')
-    .registerLocals( function (req, res, done) {
-      setTimeout( function () {
-        done(null, {title: 'Async register'});
-      }, 200);
-    })
-    .validateRegistration( function (newUserAttrs, errors) {
-      var login = newUserAttrs.login;
+UserSchema.plugin(mongooseAuth, {
+  everymodule: {
+    everyauth: {
+      User: function () {
+        return User;
+      }
+    }
+  },
+  password: {
+    loginWith: 'email',
+    extraParams: {
+      name: {
+        first: String,
+        last: String
+      }
+    },
+    everyauth: {
+      getLoginPath: '/login',
+      postLoginPath: '/login',
+      loginView: 'login.jade',
+      getRegisterPath: '/register',
+      postRegisterPath: '/register',
+      registerView: 'register.jade',
+      loginSuccessRedirect: '/',
+      registerSuccessRedirect: '/'
+    }
+  }
+});
 
-      // TODO: Implement registration validation
-      // TODO: If user already exists -> errors.push('Login already taken')
+mongoose.model('User', UserSchema);
 
-     return errors;
-    })
-    .registerUser( function (newUserAttrs) {
-      var login = newUserAttrs[this.loginKey()];
+// TODO: Move to configuration file
+mongoose.connect('mongodb://localhost/designerytest');
 
-      // TODO: Implement registration
-      //return user object
-    })
-    .loginSuccessRedirect('/')
-    .registerSuccessRedirect('/');
+User = mongoose.model('User');
 
 var app = express();
 
@@ -78,7 +73,7 @@ app.configure(function(){
   app.use(express.static(path.join(__dirname, 'app')));
   app.use(express.cookieParser());
   app.use(express.session( { secret: 'top secrecy' } ));
-  app.use(everyauth.middleware());
+  app.use(mongooseAuth.middleware());
 });
 
 app.configure('development', function(){
@@ -88,7 +83,6 @@ app.configure('development', function(){
 //app.get('/', routes.index);
 //app.get('/', express.static());
 app.get('/users', user.list);
-app.get('/aeeness', user.list);
 
 //everyauth.helpExpress(app);
 
