@@ -10,7 +10,8 @@
     "jade": "*",
     "mongoose": "~3.6.2",
     "mongoose-auth": "0.0.12",
-    "everyauth": "~0.3.1"
+    "everyauth": "~0.3.1",
+    "socket.io": "~0.9.14"
   },
   "devDependencies": {
     "grunt": "~0.4.0",
